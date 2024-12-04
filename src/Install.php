@@ -1,12 +1,12 @@
 <?php
 namespace Superadminx\News;
 
+use think\facade\Db;
+
+
 class Install
 {
     const WEBMAN_PLUGIN = true;
-
-    // 指定插件自己的数据库
-    protected static $connection = 'thinkorm.mysql';
 
     // 要安装的表，同时也是卸载要扇窗户的表
     public static $installTable = ['sa_news', 'sa_news_class'];
@@ -53,6 +53,11 @@ class Install
                     }
                 }
 
+                // 安装sql文件
+                if (is_dir(__DIR__ . '/install.sql')) {
+                    self::installSql(__DIR__ . '/install.sql');
+                }
+                echo "开始成功\n";
             }
         } catch (\Exception $e) {
             echo "{$e->getMessage()}\n";
@@ -197,6 +202,10 @@ class Install
      */
     private static function installSql($sqlPath)
     {
+        $config = config('thinkorm');
+        // 配置
+        Db::setConfig($config);
+
         $sqlContent = file_get_contents($sqlPath);
         // 尝试分割 SQL 语句（注意：这只是一个简单的示例，可能不适用于所有情况）
         $sqlStatements = explode(';', $sqlContent);
