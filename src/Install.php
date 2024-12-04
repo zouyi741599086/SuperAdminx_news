@@ -203,7 +203,10 @@ class Install
      */
     private static function installSql($sqlPath)
     {
+        echo config('thinkorm.default');
+        echo '换行\n';
         echo getenv('DB_HOST');
+        echo '换行\n';
         // 配置
         Db::setConfig([
             // 默认数据连接标识
