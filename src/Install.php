@@ -5,6 +5,9 @@ class Install
 {
     const WEBMAN_PLUGIN = true;
 
+    // 指定插件自己的数据库
+    protected static $connection = 'thinkorm.mysql';
+
     // 要安装的表，同时也是卸载要扇窗户的表
     public static $installTable = ['sa_news', 'sa_news_class'];
 
