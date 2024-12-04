@@ -15,49 +15,59 @@ class Install
      */
     public static function install()
     {
-        if (self::installDetection()) {
-            // 拷贝插件
-            copy_dir(__DIR__ . "/plugin", base_path() . "/plugin");
-
-            // 拷贝api文件
-            $apiPath = __DIR__ . '/react/api/';
-            if (is_dir($apiPath)) {
-                // 检测是否已存在此api文件
-                $apiFiles = self::getAllFiles($apiPath);
-                foreach ($apiFiles as $v) {
-                    copy($apiPath . $v, base_path() . '/public/admin_react/src/api');
+        echo "开始安装";
+        try {
+            if (self::installDetection()) {
+                // 拷贝插件
+                $pluginFolderNames = self::getFolderNames(__DIR__ . "/plugin");
+                foreach ($pluginFolderNames as $v) {
+                    echo $v;
+                    copy_dir(__DIR__ . "/plugin/{$v}", base_path() . "/plugin/{$v}");
                 }
-            }
 
-            // 拷贝components文件
-            $componentsPath = __DIR__ . '/react/components/';
-            if (is_dir($componentsPath)) {
-                // 检测是否已存在此api文件
-                $compontentsFiles = self::getAllFiles($componentsPath);
-                foreach ($compontentsFiles as $v) {
-                    copy($componentsPath . $v, base_path() . '/public/admin_react/src/components');
-                }
-            }
+                // 拷贝api文件
+                // $apiPath = __DIR__ . '/react/api/';
+                // if (is_dir($apiPath)) {
+                //     // 检测是否已存在此api文件
+                //     $apiFiles = self::getAllFiles($apiPath);
+                //     foreach ($apiFiles as $v) {
+                //         copy($apiPath . $v, base_path() . '/public/admin_react/src/api');
+                //     }
+                // }
 
-            // 拷贝pages页面
-            $pagesPath = __DIR__ . '/react/pages/';
-            if (is_dir($pagesPath)) {
-                $pagesFolderNames = self::getFolderNames($pagesPath);
-                foreach ($pagesFolderNames as $v) {
-                    copy_dir($pagesPath . $v, base_path() . '/public/admin_react/src/pages');
-                }
-            }
+                // // 拷贝components文件
+                // $componentsPath = __DIR__ . '/react/components/';
+                // if (is_dir($componentsPath)) {
+                //     // 检测是否已存在此api文件
+                //     $compontentsFiles = self::getAllFiles($componentsPath);
+                //     foreach ($compontentsFiles as $v) {
+                //         copy($componentsPath . $v, base_path() . '/public/admin_react/src/components');
+                //     }
+                // }
 
-            // 插入权限节点菜单数据
-            if (file_exists(__DIR__ . '/menu.sql') && is_file(__DIR__ . '/menu.sql')) {
-                self::installSql(__DIR__ . '/menu.sql');
-            }
+                // // 拷贝pages页面
+                // $pagesPath = __DIR__ . '/react/pages/';
+                // if (is_dir($pagesPath)) {
+                //     $pagesFolderNames = self::getFolderNames($pagesPath);
+                //     foreach ($pagesFolderNames as $v) {
+                //         copy_dir($pagesPath . $v, base_path() . '/public/admin_react/src/pages');
+                //     }
+                // }
 
-            // 插入表
-            if (file_exists(__DIR__ . '/table.sql') && is_file(__DIR__ . '/table.sql')) {
-                self::installSql(__DIR__ . '/table.sql');
+                // // 插入权限节点菜单数据
+                // if (file_exists(__DIR__ . '/menu.sql') && is_file(__DIR__ . '/menu.sql')) {
+                //     self::installSql(__DIR__ . '/menu.sql');
+                // }
+
+                // // 插入表
+                // if (file_exists(__DIR__ . '/table.sql') && is_file(__DIR__ . '/table.sql')) {
+                //     self::installSql(__DIR__ . '/table.sql');
+                // }
             }
+        } catch (\Exception $e) {
+            echo $e->getMessage();
         }
+
     }
 
     /**
@@ -66,7 +76,7 @@ class Install
      */
     public static function uninstall()
     {
-        self::uninstallByRelation();
+        //self::uninstallByRelation();
     }
 
     /**
