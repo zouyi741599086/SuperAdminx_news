@@ -54,8 +54,9 @@ class Install
                 }
 
                 // 安装sql文件
-                if (is_dir(__DIR__ . '/install.sql')) {
-                    self::installSql(__DIR__ . '/install.sql');
+                $sqlPath = __DIR__ . '/install.sql';
+                if (file_exists($sqlPath) && is_file($sqlPath)) {
+                    self::installSql($sqlPath);
                 }
                 echo "安装成功\n";
             }
