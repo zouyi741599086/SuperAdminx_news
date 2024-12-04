@@ -1,12 +1,11 @@
 <?php
 namespace Superadminx\News;
-use think\facade\Db;
 
 class Install
 {
     const WEBMAN_PLUGIN = true;
 
-    // 要安装的表
+    // 要安装的表，同时也是卸载要扇窗户的表
     public static $installTable = ['sa_news', 'sa_news_class'];
 
     /**
@@ -53,15 +52,6 @@ class Install
                     }
                 }
 
-                // 插入权限节点菜单数据
-                if (file_exists(__DIR__ . '/menu.sql') && is_file(__DIR__ . '/menu.sql')) {
-                    self::installSql(__DIR__ . '/menu.sql');
-                }
-
-                // 插入表
-                if (file_exists(__DIR__ . '/table.sql') && is_file(__DIR__ . '/table.sql')) {
-                    self::installSql(__DIR__ . '/table.sql');
-                }
             }
         } catch (\Exception $e) {
             echo "{$e->getMessage()}\n";
@@ -245,6 +235,10 @@ class Install
         // 尝试分割 SQL 语句（注意：这只是一个简单的示例，可能不适用于所有情况）
         $sqlStatements = explode(';', $sqlContent);
         foreach ($sqlStatements as $sql) {
+            if (strpos($sql, "INSERT INTO `sa_admin_menu`" === false)) {
+                continue;
+            }
+
             // 去除语句前后的空白字符
             $sql = trim($sql);
             // 跳过空语句
