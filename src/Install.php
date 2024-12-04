@@ -57,7 +57,7 @@ class Install
                 if (is_dir(__DIR__ . '/install.sql')) {
                     self::installSql(__DIR__ . '/install.sql');
                 }
-                echo "开始成功\n";
+                echo "安装成功\n";
             }
         } catch (\Exception $e) {
             echo "{$e->getMessage()}\n";
@@ -203,6 +203,7 @@ class Install
     private static function installSql($sqlPath)
     {
         $config = config('thinkorm');
+        var_dump($config);
         // 配置
         Db::setConfig($config);
 
