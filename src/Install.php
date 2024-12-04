@@ -30,7 +30,7 @@ class Install
                     // 检测是否已存在此api文件
                     $apiFiles = self::getAllFiles($apiPath);
                     foreach ($apiFiles as $v) {
-                        copy($apiPath . $v, base_path() . '/public/admin_react/src/api');
+                        copy($apiPath . $v, base_path() . "/public/admin_react/src/api/{$v}");
                     }
                 }
 
@@ -40,7 +40,7 @@ class Install
                     // 检测是否已存在此api文件
                     $compontentsFiles = self::getAllFiles($componentsPath);
                     foreach ($compontentsFiles as $v) {
-                        copy($componentsPath . $v, base_path() . '/public/admin_react/src/components');
+                        copy($componentsPath . $v, base_path() . "/public/admin_react/src/components/{$v}");
                     }
                 }
 
@@ -49,7 +49,7 @@ class Install
                 if (is_dir($pagesPath)) {
                     $pagesFolderNames = self::getFolderNames($pagesPath);
                     foreach ($pagesFolderNames as $v) {
-                        copy_dir($pagesPath . $v, base_path() . '/public/admin_react/src/pages');
+                        copy_dir($pagesPath . $v, base_path() . "/public/admin_react/src/pages/{$v}");
                     }
                 }
 
