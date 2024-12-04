@@ -69,7 +69,40 @@ class Install
      */
     public static function uninstall()
     {
-        //self::uninstallByRelation();
+        // 删除插件
+        $pluginFolderNames = self::getFolderNames(__DIR__ . "/plugin");
+        foreach ($pluginFolderNames as $v) {
+            remove_dir(base_path() . "/plugin/{$v}");
+        }
+
+        // 删除api文件
+        $apiPath = __DIR__ . '/react/api/';
+        if (is_dir($apiPath)) {
+            // 检测是否已存在此api文件
+            $apiFiles = self::getAllFiles($apiPath);
+            foreach ($apiFiles as $v) {
+                unlink(base_path() . "/public/admin_react/src/api/{$v}");
+            }
+        }
+
+        // 删除components文件
+        $componentsPath = __DIR__ . '/react/components/';
+        if (is_dir($componentsPath)) {
+            $compontentsFiles = self::getAllFiles($componentsPath);
+            foreach ($compontentsFiles as $v) {
+                unlink(base_path() . "/public/admin_react/src/components/{$v}");
+            }
+        }
+
+        // 删除pages页面
+        $pagesPath = __DIR__ . '/react/pages/';
+        if (is_dir($pagesPath)) {
+            $pagesFolderNames = self::getFolderNames($pagesPath);
+            foreach ($pagesFolderNames as $v) {
+                remove_dir("/public/admin_react/src/pages/{$v}");
+            }
+        }
+
     }
 
     /**
