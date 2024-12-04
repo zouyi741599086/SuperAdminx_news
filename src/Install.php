@@ -203,6 +203,7 @@ class Install
      */
     private static function installSql($sqlPath)
     {
+        echo getenv('DB_HOST');
         // 配置
         Db::setConfig([
             // 默认数据连接标识
