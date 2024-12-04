@@ -171,7 +171,7 @@ class Install
      * @param mixed $sqlPath
      * @return void
      */
-    private function installSql($sqlPath)
+    private static function installSql($sqlPath)
     {
         $sqlContent = file_get_contents($sqlPath);
         // 尝试分割 SQL 语句（注意：这只是一个简单的示例，可能不适用于所有情况）
