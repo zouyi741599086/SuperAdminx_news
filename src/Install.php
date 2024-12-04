@@ -203,6 +203,7 @@ class Install
      */
     private static function installSql($sqlPath)
     {
+        $config = self::getEnvs( base_path() . '/.env');
         // 配置
         Db::setConfig([
             // 默认数据连接标识
@@ -213,13 +214,13 @@ class Install
                     // 数据库类型
                     'type'            => 'mysql',
                     // 服务器地址
-                    'hostname'        => '192.168.1.168',
+                    'hostname'        => $config['DB_HOST'],
                     // 数据库名
-                    'database'        => 'superadminx',
+                    'database'        => $config['DB_NAME'],
                     // 数据库用户名
-                    'username'        => 'root',
+                    'username'        => $config['DB_USER'],
                     // 数据库密码
-                    'password'        => 'root',
+                    'password'        => $config['DB_PASSWORD'],
                     // 数据库连接端口
                     'hostport'        => 3306,
                     // 数据库连接参数
@@ -228,9 +229,9 @@ class Install
                         \PDO::ATTR_TIMEOUT => 3,
                     ],
                     // 数据库编码默认采用utf8
-                    'charset'         => 'utf8mb4',
+                    'charset'         => $config['DB_CHARSET'],
                     // 数据库表前缀
-                    'prefix'          => 'sa_',
+                    'prefix'          => $config['DB_PREFIX'],
                     // 断线重连
                     'break_reconnect' => true,
                     // 关闭SQL监听日志
@@ -361,5 +362,41 @@ class Install
             }
         }
         return $names;
+    }
+
+    /**
+     * 获取env文件的配置
+     * @param string $envPath
+     * @return string[]
+     */
+    private static function getEnvs(string $envPath) : array
+    {
+        // 读取文件内容到数组中，每行作为数组的一个元素
+        $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        // 初始化一个空数组来存储配置信息
+        $config = [];
+        // 遍历每一行
+        foreach ($lines as $line) {
+            // 使用trim去除行首和行尾的空白字符
+            $trimmedLine = trim($line);
+
+            // 检查是否是注释行（以#开头）
+            if (strpos($trimmedLine, '#') === 0) {
+                continue; // 如果是注释行，则跳过
+            }
+
+            // 使用=分割键值对
+            if (strpos($trimmedLine, '=') !== false) {
+                list($key, $value) = explode('=', $trimmedLine, 2);
+
+                // 去除键和值两端的空白字符
+                $key   = trim($key);
+                $value = trim($value);
+
+                // 将解析后的键值对存入配置数组
+                $config[$key] = $value;
+            }
+        }
+        return $config;
     }
 }
