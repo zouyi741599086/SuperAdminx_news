@@ -15,7 +15,7 @@ class Install
      */
     public static function install()
     {
-        echo "开始安装";
+        echo "开始安装\n";
         try {
             if (self::installDetection()) {
                 // 拷贝插件
@@ -66,7 +66,8 @@ class Install
                 // }
             }
         } catch (\Exception $e) {
-            echo $e->getMessage();
+            echo "{$e->getMessage()}\n";
+            echo "安装失败，请删除依赖》解决问题》重新安装\n";
         }
 
     }
@@ -164,17 +165,6 @@ class Install
                 }
             }
         }
-
-        // 检测要安装的表是否已经存在
-        $dbname = getenv('DB_NAME');
-        foreach (self::$installTable as $v) {
-            $tmp = Db::query("SELECT count(*) FROM information_schema.tables WHERE table_schema = '{$dbname}' AND table_name = '{$v}'");
-            if ($tmp[0]['count(*)'] > 0) {
-                echo "安装失败：数据库中{$v}表已经存在\n";
-                $result = false;
-            }
-        }
-
         return $result;
     }
 
