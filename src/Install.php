@@ -20,6 +20,7 @@ class Install
             if (self::installDetection()) {
                 // 拷贝插件
                 $pluginFolderNames = self::getFolderNames(__DIR__ . "/plugin");
+                var_dump($pluginFolderNames);
                 foreach ($pluginFolderNames as $v) {
                     echo $v;
                     copy_dir(__DIR__ . "/plugin/{$v}", base_path() . "/plugin/{$v}");
