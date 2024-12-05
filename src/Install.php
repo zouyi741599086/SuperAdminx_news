@@ -68,7 +68,7 @@ class Install
                     if ($item['type'] == 'file') {
                         $fileNames = self::getAllFiles(__DIR__ . $item['source']);
                         foreach ($fileNames as $v) {
-                            copy(__DIR__ . "{$v['source']}/{$v}", base_path() . "{$item['dest']}/{$v}");
+                            copy(__DIR__ . "{$item['source']}/{$v}", base_path() . "{$item['dest']}/{$v}");
                         }
                     }
                 }
