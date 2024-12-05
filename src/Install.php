@@ -3,13 +3,39 @@ namespace Superadminx\News;
 
 use think\facade\Db;
 
-
 class Install
 {
     const WEBMAN_PLUGIN = true;
 
-    // 要安装的表，同时也是卸载要扇窗户的表
-    public static $installTable = ['sa_news', 'sa_news_class'];
+    /**
+     * 要拷贝的数据
+     * @var array
+     */
+    protected static $pathRelation = [
+        [
+            'source' => '/plugin', //源目录
+            'dest'   => '/plugin', //拷贝目标目录
+            'type'   => 'folder', //类型，是拷贝源目录下的文件夹还是文件，folder》文件夹，file》文件
+        ],
+        [
+            'source' => '/react/api',
+            'dest'   => '/public/admin_react/src/api',
+            'type'   => 'file',
+        ],
+        [
+            'source' => '/react/components',
+            'dest'   => '/public/admin_react/src/components',
+            'type'   => 'file',
+        ],
+        [
+            'source' => '/react/pages',
+            'dest'   => '/public/admin_react/src/pages',
+            'type'   => 'folder',
+        ],
+    ];
+
+    // db的配置，标识是否已配置
+    public static $dbConfig = [];
 
     /**
      * Install
@@ -19,50 +45,47 @@ class Install
     {
         echo "开始安装\n";
         try {
+            // 初始化db
+            self::dbInit();
+
+            // 开始检测安装条件
             if (self::installDetection()) {
-                // 拷贝插件
-                $pluginFolderNames = self::getFolderNames(__DIR__ . "/plugin");
-                foreach ($pluginFolderNames as $v) {
-                    copy_dir(__DIR__ . "/plugin/{$v}", base_path() . "/plugin/{$v}");
-                }
 
-                // 拷贝api文件
-                $apiPath = __DIR__ . '/react/api/';
-                if (is_dir($apiPath)) {
-                    $apiFiles = self::getAllFiles($apiPath);
-                    foreach ($apiFiles as $v) {
-                        copy($apiPath . $v, base_path() . "/public/admin_react/src/api/{$v}");
+                foreach (self::$pathRelation as $item) {
+                    // 拷贝文件夹
+                    if ($item['type'] == 'folder') {
+                        $folderNames = self::getFolderNames(__DIR__ . $item['source']);
+                        foreach ($folderNames as $v) {
+                            copy_dir(__DIR__ . "{$item['source']}/{$v}", base_path() . "{$item['dest']}/{$v}");
+                        }
+                    }
+
+                    // 拷贝文件
+                    if ($item['type'] == 'file') {
+                        $fileNames = self::getAllFiles(__DIR__ . $item['source']);
+                        foreach ($fileNames as $v) {
+                            copy(__DIR__ . "{$v['source']}/{$v}", base_path() . "{$item['dest']}/{$v}");
+                        }
                     }
                 }
 
-                // 拷贝components文件
-                $componentsPath = __DIR__ . '/react/components/';
-                if (is_dir($componentsPath)) {
-                    $compontentsFiles = self::getAllFiles($componentsPath);
-                    foreach ($compontentsFiles as $v) {
-                        copy($componentsPath . $v, base_path() . "/public/admin_react/src/components/{$v}");
-                    }
-                }
-
-                // 拷贝pages页面
-                $pagesPath = __DIR__ . '/react/pages/';
-                if (is_dir($pagesPath)) {
-                    $pagesFolderNames = self::getFolderNames($pagesPath);
-                    foreach ($pagesFolderNames as $v) {
-                        copy_dir($pagesPath . $v, base_path() . "/public/admin_react/src/pages/{$v}");
-                    }
-                }
-
-                // 安装sql文件
-                $sqlPath = __DIR__ . '/install.sql';
+                // 是否存在adminMenu.sql
+                $sqlPath = __DIR__ . '/adminMenu.sql';
                 if (file_exists($sqlPath) && is_file($sqlPath)) {
                     self::installSql($sqlPath);
                 }
+
+                // 是否存在createTable.sql
+                $sqlPath = __DIR__ . '/createTable.sql';
+                if (file_exists($sqlPath) && is_file($sqlPath)) {
+                    self::installSql($sqlPath);
+                }
+
                 echo "安装成功\n";
             }
         } catch (\Exception $e) {
             echo "{$e->getMessage()}\n";
-            echo "安装失败，请删除依赖》解决问题》重新安装\n";
+            echo "安装失败：请删除依赖》解决问题》重新安装\n";
         }
 
     }
@@ -73,44 +96,52 @@ class Install
      */
     public static function uninstall()
     {
-        // 删除插件
-        $pluginFolderNames = self::getFolderNames(__DIR__ . "/plugin");
-        foreach ($pluginFolderNames as $v) {
-            remove_dir(base_path() . "/plugin/{$v}");
-        }
+        // 初始化db
+        self::dbInit();
 
-        // 删除api文件
-        $apiPath = __DIR__ . '/react/api/';
-        if (is_dir($apiPath)) {
-            // 检测是否已存在此api文件
-            $apiFiles = self::getAllFiles($apiPath);
-            foreach ($apiFiles as $v) {
-                unlink(base_path() . "/public/admin_react/src/api/{$v}");
+        foreach (self::$pathRelation as $item) {
+            // 删除文件夹
+            if ($item['type'] == 'folder') {
+                $folderNames = self::getFolderNames(__DIR__ . $item['source']);
+                foreach ($folderNames as $v) {
+                    remove_dir(base_path() . "{$item['dest']}/{$v}");
+                }
+            }
+
+            // 删除文件
+            if ($item['type'] == 'file') {
+                $fileNames = self::getAllFiles(__DIR__ . $item['source']);
+                foreach ($fileNames as $v) {
+                    unlink(base_path() . "{$item['dest']}/{$v}");
+                }
             }
         }
 
-        // 删除components文件
-        $componentsPath = __DIR__ . '/react/components/';
-        if (is_dir($componentsPath)) {
-            $compontentsFiles = self::getAllFiles($componentsPath);
-            foreach ($compontentsFiles as $v) {
-                unlink(base_path() . "/public/admin_react/src/components/{$v}");
+        // 检测是否有adminMenu.sql，需要删除表中的权限节点
+        $sqlPath = __DIR__ . '/adminMenu.sql';
+        if (file_exists($sqlPath) && is_file($sqlPath)) {
+            // 提炼出安装的节点name
+            $adminMenuNames = self::getMenuNames($sqlPath);
+            if ($adminMenuNames) {
+                Db::table(self::$dbConfig['DB_PREFIX'] . 'admin_menu')->where('name', 'in', $adminMenuNames)->delete();
             }
         }
 
-        // 删除pages页面
-        $pagesPath = __DIR__ . '/react/pages/';
-        if (is_dir($pagesPath)) {
-            $pagesFolderNames = self::getFolderNames($pagesPath);
-            foreach ($pagesFolderNames as $v) {
-                remove_dir(base_path() . "/public/admin_react/src/pages/{$v}");
+        // 检测是否有createTable.sql，需要删除表
+        $sqlPath = __DIR__ . '/createTable.sql';
+        if (file_exists($sqlPath) && is_file($sqlPath)) {
+            // 提炼出安装的表名
+            $tables = self::getTableNamesFromSqlFile($sqlPath);
+            foreach ($tables as $v) {
+                Db::query("DROP TABLE IF EXISTS {$v};");
             }
         }
-
     }
 
+
+
     /**
-     * 安装前检测是否满足
+     * 安装前检测是否能安装
      * @return void
      */
     public static function installDetection()
@@ -118,146 +149,49 @@ class Install
         // 是否能成功安装
         $result = true;
 
-        // 插件的目录
-        $pluginPath = base_path() . '/plugin';
+        foreach (self::$pathRelation as $item) {
+            // 检测拷贝文件夹
+            if ($item['type'] == 'folder') {
+                // 获取源文件夹下所有的文件夹名
+                $folderNames = self::getFolderNames(__DIR__ . $item['source']);
+                foreach ($folderNames as $v) {
+                    // 检测目标文件夹是否已存在
+                    $tmp = base_path() . "{$item['dest']}/{$v}";
+                    if (is_dir($tmp)) {
+                        echo "安装失败：目录已存在{$tmp}\n";
+                        $result = false;
+                    }
+                }
+            }
 
-        // 插件目录不存在则直接创建，存在则判断跟安装的插件目录是否有冲突
-        if (! is_dir($pluginPath)) {
-            mkdir($pluginPath, 0777, true);
-        } else {
-            $pluginFolderNames = self::getFolderNames(__DIR__ . '/plugin');
-            foreach ($pluginFolderNames as $v) {
-                if (is_dir("{$pluginPath}/{$v}")) {
-                    echo "安装失败：插件目录plugin中已经存在{$v}\n";
+            //检测拷贝文件
+            if ($item['type'] == 'file') {
+                // 获取源文件夹下所有的文件
+                $fileNames = self::getAllFiles(__DIR__ . $item['source']);
+                foreach ($fileNames as $v) {
+                    $tmp = base_path() . "{$item['dest']}/{$v}";
+                    if (file_exists($tmp) && is_file($tmp)) {
+                        echo "安装失败：文件已存在{$tmp}\n";
+                        $result = false;
+                    }
+                }
+            }
+        }
+
+        // 提炼sql需要安装的表
+        $sqlPath = __DIR__ . '/createTable.sql';
+        if (file_exists($sqlPath) && is_file($sqlPath)) {
+            $tables = self::getTableNamesFromSqlFile($sqlPath);
+            foreach ($tables as $item) {
+                $tmp = Db::query("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = '" . self::$dbConfig['DB_NAME'] . "' AND TABLE_NAME = '{$item}'");
+                if (isset($tmp[0]['TABLE_NAME']) && $tmp[0]['TABLE_NAME']) {
+                    echo "安装失败：数据表已存在{$item}\n";
                     $result = false;
                 }
             }
         }
 
-        // 检测react中需要的文件或目录是否满足 // 
-
-        // 检测api文件是否有冲突
-        $apiPath = __DIR__ . '/react/api/';
-        if (is_dir($apiPath)) {
-            $tmp = base_path() . '/public/admin_react/src/api';
-            if (! is_dir($tmp)) {
-                echo "安装失败：目录不存在public/admin_react/src/api，说明react源码被搬家了\n";
-                $result = false;
-            } else {
-                // 检测是否已存在此api文件
-                $apiFiles = self::getAllFiles($apiPath);
-                foreach ($apiFiles as $v) {
-                    $tmp = base_path() . '/public/admin_react/src/api/' . $v;
-                    if (file_exists($tmp) && is_file($tmp)) {
-                        echo "安装失败：public/admin_react/src/api中已经存在{$v}\n";
-                        $result = false;
-                    }
-                }
-            }
-        }
-
-        // 检测components目录是否有冲突
-        $componentsPath = __DIR__ . '/react/components/';
-        if (is_dir($componentsPath)) {
-            $tmp = base_path() . '/public/admin_react/src/components';
-            if (! is_dir($tmp)) {
-                mkdir($tmp, 0777, true);
-            } else {
-                $compontentsFiles = self::getAllFiles($componentsPath);
-                foreach ($compontentsFiles as $v) {
-                    // 检测是否已存在此最贱
-                    $tmp = base_path() . '/public/admin_react/src/components/' . $v;
-                    if (file_exists($tmp) && is_file($tmp)) {
-                        echo "安装失败：public/admin_react/src/components中已经存在{$v}组件\n";
-                        $result = false;
-                    }
-                }
-            }
-        }
-
-        // 检测pages目录是否有冲突
-        $pagesPath = __DIR__ . '/react/pages/';
-        if (is_dir($pagesPath)) {
-            $tmp = base_path() . '/public/admin_react/src/pages';
-            if (! is_dir($tmp)) {
-                echo "安装失败：目录不存在public/admin_react/src/pages，说明reanct源码被搬家了\n";
-                $result = false;
-            } else {
-                $pagesFolderNames = self::getFolderNames($pagesPath);
-                foreach ($pagesFolderNames as $v) {
-                    $tmp = base_path() . '/public/admin_react/src/pages/' . $v;
-                    if (is_dir($tmp)) {
-                        echo "安装失败：public/admin_react/src/pages目录下已存在{$v}\n";
-                        $result = false;
-                    }
-                }
-            }
-        }
         return $result;
-    }
-
-    /**
-     * 执行sql文件
-     * @param mixed $sqlPath
-     * @return void
-     */
-    private static function installSql($sqlPath)
-    {
-        $config = self::getEnvs( base_path() . '/.env');
-        // 配置
-        Db::setConfig([
-            // 默认数据连接标识
-            'default'     => 'mysql',
-            // 数据库连接信息
-            'connections' => [
-                'mysql' => [
-                    // 数据库类型
-                    'type'            => 'mysql',
-                    // 服务器地址
-                    'hostname'        => $config['DB_HOST'],
-                    // 数据库名
-                    'database'        => $config['DB_NAME'],
-                    // 数据库用户名
-                    'username'        => $config['DB_USER'],
-                    // 数据库密码
-                    'password'        => $config['DB_PASSWORD'],
-                    // 数据库连接端口
-                    'hostport'        => 3306,
-                    // 数据库连接参数
-                    'params'          => [
-                        // 连接超时3秒
-                        \PDO::ATTR_TIMEOUT => 3,
-                    ],
-                    // 数据库编码默认采用utf8
-                    'charset'         => $config['DB_CHARSET'],
-                    // 数据库表前缀
-                    'prefix'          => $config['DB_PREFIX'],
-                    // 断线重连
-                    'break_reconnect' => true,
-                    // 关闭SQL监听日志
-                    'trigger_sql'     => false,
-                    // 自定义分页类
-                    'bootstrap'       => '',
-                    // 是否严格检查字段是否存在
-                    'fields_strict'   => false,
-                    // 开启字段缓存
-                    'fields_cache'    => true,
-                ],
-            ],
-        ]);
-
-        $sqlContent = file_get_contents($sqlPath);
-        // 尝试分割 SQL 语句（注意：这只是一个简单的示例，可能不适用于所有情况）
-        $sqlStatements = explode(';', $sqlContent);
-        foreach ($sqlStatements as $sqlStatement) {
-            // 去除语句前后的空白字符
-            $sqlStatement = trim($sqlStatement);
-            // 跳过空语句
-            if (empty($sqlStatement)) {
-                continue;
-            }
-            Db::query($sqlStatement);
-        }
     }
 
     /**
@@ -306,7 +240,7 @@ class Install
     }
 
     /**
-     * 提炼menu.sql中的插入权限节点的所有的name，卸载的时候用来删除
+     * 提炼adminMenu.sql中的插入权限节点的所有的name，卸载的时候用来删除
      * @param string $sqlPath
      * @return string[]
      */
@@ -318,10 +252,6 @@ class Install
         // 尝试分割 SQL 语句（注意：这只是一个简单的示例，可能不适用于所有情况）
         $sqlStatements = explode(';', $sqlContent);
         foreach ($sqlStatements as $sql) {
-            if (strpos($sql, "INSERT INTO `sa_admin_menu`" === false)) {
-                continue;
-            }
-
             // 去除语句前后的空白字符
             $sql = trim($sql);
             // 跳过空语句
@@ -362,6 +292,108 @@ class Install
             }
         }
         return $names;
+    }
+
+    /**
+     * 执行sql文件
+     * @param mixed $sqlPath
+     * @return void
+     */
+    private static function installSql($sqlPath)
+    {
+        $sqlContent = file_get_contents($sqlPath);
+        // 尝试分割 SQL 语句（注意：这只是一个简单的示例，可能不适用于所有情况）
+        $sqlStatements = explode(';', $sqlContent);
+        foreach ($sqlStatements as $sql) {
+            // 去除语句前后的空白字符
+            $sql = trim($sql);
+            // 跳过空语句
+            if (empty($sql)) {
+                continue;
+            }
+            Db::query($sql);
+        }
+    }
+
+    /**
+     * 从sql文件中提炼出安装的表名
+     * @param mixed $sqlPath
+     * @return array
+     */
+    private static function getTableNamesFromSqlFile($sqlPath) : array
+    {
+        // 初始化表名数组
+        $tableNames = [];
+
+        // 读取SQL文件内容
+        $sqlContent = file_get_contents($sqlPath);
+
+        // 检查文件是否成功读取
+        if ($sqlContent === false) {
+            return $tableNames;
+        }
+
+        // 使用正则表达式匹配CREATE TABLE语句中的表名
+        preg_match_all('/CREATE TABLE `([^`]+)`/i', $sqlContent, $matches);
+
+        // 如果匹配成功，则$matches[1]包含了所有匹配到的表名
+        if (! empty($matches[1])) {
+            $tableNames = $matches[1];
+        }
+
+        // 返回表名数组
+        return $tableNames;
+    }
+
+    /**
+     * 初始化db配置
+     * @return void
+     */
+    private static function dbInit()
+    {
+        if (! self::$dbConfig) {
+            self::$dbConfig = self::getEnvs(base_path() . '/.env');
+            Db::setConfig([
+                // 默认数据连接标识
+                'default'     => 'mysql',
+                // 数据库连接信息
+                'connections' => [
+                    'mysql' => [
+                        // 数据库类型
+                        'type'            => 'mysql',
+                        // 服务器地址
+                        'hostname'        => $config['DB_HOST'],
+                        // 数据库名
+                        'database'        => $config['DB_NAME'],
+                        // 数据库用户名
+                        'username'        => $config['DB_USER'],
+                        // 数据库密码
+                        'password'        => $config['DB_PASSWORD'],
+                        // 数据库连接端口
+                        'hostport'        => 3306,
+                        // 数据库连接参数
+                        'params'          => [
+                            // 连接超时3秒
+                            \PDO::ATTR_TIMEOUT => 3,
+                        ],
+                        // 数据库编码默认采用utf8
+                        'charset'         => $config['DB_CHARSET'],
+                        // 数据库表前缀
+                        'prefix'          => $config['DB_PREFIX'],
+                        // 断线重连
+                        'break_reconnect' => true,
+                        // 关闭SQL监听日志
+                        'trigger_sql'     => false,
+                        // 自定义分页类
+                        'bootstrap'       => '',
+                        // 是否严格检查字段是否存在
+                        'fields_strict'   => false,
+                        // 开启字段缓存
+                        'fields_cache'    => true,
+                    ],
+                ],
+            ]);
+        }
     }
 
     /**
