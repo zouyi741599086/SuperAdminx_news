@@ -131,6 +131,10 @@ class Install
             // 提炼出安装的节点name
             $adminMenuNames = self::getMenuNames($sqlPath);
             if ($adminMenuNames) {
+                echo self::$dbConfig['DB_PREFIX'] . 'admin_menu' . "\n";
+                foreach ($adminMenuNames as $v) {
+                    echo "{$v}\n";
+                }
                 Db::table(self::$dbConfig['DB_PREFIX'] . 'admin_menu')->where('name', 'in', $adminMenuNames)->delete();
             }
         }
@@ -152,7 +156,7 @@ class Install
      * 安装前检测是否能安装
      * @return void
      */
-    public static function installDetection()
+    private static function installDetection()
     {
         // 是否能成功安装
         $result = true;
