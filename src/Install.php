@@ -135,7 +135,8 @@ class Install
                 foreach ($adminMenuNames as $v) {
                     echo "{$v}\n";
                 }
-                Db::table(self::$dbConfig['DB_PREFIX'] . 'admin_menu')->where('name', 'in', $adminMenuNames)->delete();
+                $a = Db::table(self::$dbConfig['DB_PREFIX'] . 'admin_menu')->fetchSql(true)->where('name', 'in', $adminMenuNames)->delete();
+                echo "{$a}\n";
             }
         }
 
