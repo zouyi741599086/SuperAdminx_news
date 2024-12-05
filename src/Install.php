@@ -131,12 +131,7 @@ class Install
             // 提炼出安装的节点name
             $adminMenuNames = self::getMenuNames($sqlPath);
             if ($adminMenuNames) {
-                echo self::$dbConfig['DB_PREFIX'] . 'admin_menu' . "\n";
-                foreach ($adminMenuNames as $v) {
-                    echo "{$v}\n";
-                }
-                $a = Db::table(self::$dbConfig['DB_PREFIX'] . 'admin_menu')->fetchSql(true)->where('name', 'in', $adminMenuNames)->delete();
-                echo "{$a}\n";
+                Db::table(self::$dbConfig['DB_PREFIX'] . 'admin_menu')->where('name', 'in', $adminMenuNames)->delete();
             }
         }
 
@@ -302,7 +297,7 @@ class Install
             foreach ($fieldArray as $ks => $vs) {
                 if ($vs == 'name') {
                     if (isset($valueArray[$ks]) && $valueArray[$ks]) {
-                        $names[] = $valueArray[$ks];
+                        $names[] = trim($valueArray[$ks], "'");
                     }
                     break;
                 }
