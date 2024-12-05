@@ -34,7 +34,7 @@ class Install
         ],
     ];
 
-    // db的配置，标识是否已配置
+    // db的配置，用来标识是否已配置
     public static $dbConfig = [];
 
     /**
@@ -52,6 +52,10 @@ class Install
             if (self::installDetection()) {
 
                 foreach (self::$pathRelation as $item) {
+                    if (!is_dir(__DIR__ . $item['source'])) {
+                        continue;
+                    }
+
                     // 拷贝文件夹
                     if ($item['type'] == 'folder') {
                         $folderNames = self::getFolderNames(__DIR__ . $item['source']);
@@ -100,6 +104,10 @@ class Install
         self::dbInit();
 
         foreach (self::$pathRelation as $item) {
+            if (!is_dir(__DIR__ . $item['source'])) {
+                continue;
+            }
+
             // 删除文件夹
             if ($item['type'] == 'folder') {
                 $folderNames = self::getFolderNames(__DIR__ . $item['source']);
@@ -150,6 +158,10 @@ class Install
         $result = true;
 
         foreach (self::$pathRelation as $item) {
+            if (!is_dir(__DIR__ . $item['source'])) {
+                continue;
+            }
+            
             // 检测拷贝文件夹
             if ($item['type'] == 'folder') {
                 // 获取源文件夹下所有的文件夹名
