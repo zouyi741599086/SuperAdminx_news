@@ -362,13 +362,13 @@ class Install
                         // 数据库类型
                         'type'            => 'mysql',
                         // 服务器地址
-                        'hostname'        => $config['DB_HOST'],
+                        'hostname'        => self::$dbConfig['DB_HOST'],
                         // 数据库名
-                        'database'        => $config['DB_NAME'],
+                        'database'        => self::$dbConfig['DB_NAME'],
                         // 数据库用户名
-                        'username'        => $config['DB_USER'],
+                        'username'        => self::$dbConfig['DB_USER'],
                         // 数据库密码
-                        'password'        => $config['DB_PASSWORD'],
+                        'password'        => self::$dbConfig['DB_PASSWORD'],
                         // 数据库连接端口
                         'hostport'        => 3306,
                         // 数据库连接参数
@@ -377,9 +377,9 @@ class Install
                             \PDO::ATTR_TIMEOUT => 3,
                         ],
                         // 数据库编码默认采用utf8
-                        'charset'         => $config['DB_CHARSET'],
+                        'charset'         => self::$dbConfig['DB_CHARSET'],
                         // 数据库表前缀
-                        'prefix'          => $config['DB_PREFIX'],
+                        'prefix'          => self::$dbConfig['DB_PREFIX'],
                         // 断线重连
                         'break_reconnect' => true,
                         // 关闭SQL监听日志
