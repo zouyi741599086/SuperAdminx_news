@@ -147,7 +147,6 @@ class Install
     }
 
 
-
     /**
      * 安装前检测是否能安装
      * @return void
