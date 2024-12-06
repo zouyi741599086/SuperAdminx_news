@@ -13,9 +13,9 @@ class Install
      */
     protected static $pathRelation = [
         [
-            'source' => '/plugin', //源目录
-            'dest'   => '/plugin', //拷贝目标目录
-            'type'   => 'folder', //类型，是拷贝源目录下的文件夹还是文件，folder》文件夹，file》文件
+            'source' => '/plugin', // 源目录
+            'dest'   => '/plugin', // 拷贝目标目录
+            'type'   => 'folder', // 类型，是拷贝源目录下的文件夹还是文件，folder》文件夹，file》文件
         ],
         [
             'source' => '/react/api',
@@ -318,10 +318,17 @@ class Install
         foreach ($sqlStatements as $sql) {
             // 去除语句前后的空白字符
             $sql = trim($sql);
+
             // 跳过空语句
             if (empty($sql)) {
                 continue;
             }
+
+            // 表前缀替换为用户自己的
+            $sql = str_replace("INSERT INTO `sa_", "INSERT INTO `" . self::$dbConfig['DB_PREFIX'] , $sql); // 插入语句
+            $sql = str_replace("UPDATE `sa_", "UPDATE `" . self::$dbConfig['DB_PREFIX'] , $sql); // 更新语句
+            $sql = str_replace("CREATE TABLE `sa_", "CREATE TABLE `" . self::$dbConfig['DB_PREFIX'] , $sql); // 新建表语句
+
             Db::query($sql);
         }
     }
