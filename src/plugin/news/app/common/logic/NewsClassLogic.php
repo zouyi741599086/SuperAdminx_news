@@ -132,7 +132,7 @@ class NewsClassLogic
                 if ($item['pid']) {
                     $pidData                = NewsClassModel::field('id,pid,pid_path,pid_path_title')->find($item['pid']);
                     $item['pid_path']       = "{$pidData['pid_path']}{$item['id']},";
-                    $item['pid_path_title'] = "{$pidData['pid_path_title']}-{$item['title']}";
+                    $item['pid_path_title'] = "{$pidData['pid_path_title']}/{$item['title']}";
                 } else {
                     $item['pid_path']       = ",{$item['id']},";
                     $item['pid_path_title'] = $item['title'];
