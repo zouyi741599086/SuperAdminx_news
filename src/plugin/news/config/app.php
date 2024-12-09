@@ -3,8 +3,8 @@
 use support\Request;
 
 return [
-    'debug' => true,
+    'debug' => getenv('DE_BUG') == 'true' ? true : false,,
     'controller_suffix' => '',
     'controller_reuse' => true,
-    'version' => '1.0.0'
+    'version' => '1.0.7'
 ];
