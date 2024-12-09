@@ -2,6 +2,6 @@
 
 return [
     //'' => support\exception\Handler::class,
-    //自定义异常处理类
+    //鑷畾涔夊紓甯稿鐞嗙被
     '' => app\exception\Handler::class,
 ];
