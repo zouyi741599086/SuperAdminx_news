@@ -6,5 +6,5 @@ return [
     'debug' => getenv('DE_BUG') == 'true' ? true : false,,
     'controller_suffix' => '',
     'controller_reuse' => true,
-    'version' => '1.0.8'
+    'version' => '1.0.9'
 ];

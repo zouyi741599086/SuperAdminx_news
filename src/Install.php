@@ -36,17 +36,7 @@ class Install
             if (self::installDetection()) {
 
                 foreach (self::$pathRelation as $source => $dest) {
-                    $type = self::checkPathOrFile($source);
-
-                    // 拷贝文件夹
-                    if ($type == 'folder') {
-                        self::copy_dir(__DIR__ . $source, base_path() . $dest);
-                    }
-
-                    // 拷贝文件
-                    if ($type == 'file') {
-                        copy(__DIR__ . $source, base_path() . $dest);
-                    }
+                    self::copy_dir(__DIR__ . $source, base_path() . $dest);
                 }
 
                 // 是否存在adminMenu.sql
@@ -83,17 +73,7 @@ class Install
 
         foreach (self::$pathRelation as $source => $dest) {
             try {
-                $type = self::checkPathOrFile($source);
-
-                // 删除文件夹
-                if ($type == 'folder') {
-                    remove_dir(base_path() . $dest);
-                }
-
-                // 删除文件
-                if ($type == 'file') {
-                    unlink(base_path() . $dest);
-                }
+                remove_dir(base_path() . $dest);
             } catch (\Exception $e) {
                 echo "{$e->getMessage()}\n";
             }
