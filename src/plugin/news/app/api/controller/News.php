@@ -3,7 +3,6 @@ namespace plugin\news\app\api\controller;
 
 use support\Request;
 use support\Response;
-use app\utils\Jwt;
 use plugin\news\app\common\logic\NewsLogic;
 
 /**
@@ -19,5 +18,51 @@ class News
     // 不需要登录的方法
     protected $noNeedLogin = [];
 
-    
+    /**
+     * 获取列表
+     * @method get
+     * @param Request $request 
+     * @return Response
+     */
+    public function getList(Request $request) : Response
+    {
+        $list = NewsLogic::getList([], [], true);
+        $list->each(function ($item, $key)
+        {
+            if ($item['img']) {
+                $item['img'] = file_url($item['img']);
+            } else {
+                $item['img'] = [];
+            }
+        });
+        return success($list);
+    }
+
+    /**
+     * 获取文章
+     * @method get
+     * @param Request $request 
+     * @return Response
+     */
+    public function findData(Request $request) : Response
+    {
+        $data = NewsLogic::findData(request()->get('id'));
+        //替换连接
+        $data['img']     = file_url($data['img']);
+        $data['content'] = file_url($data['content']);
+        return success($data);
+    }
+
+    /**
+     * 增加浏览量
+     * @method get
+     * @param Request $request 
+     * @return Response
+     */
+    public function incPv(Request $request) : Response
+    {
+        NewsLogic::incPv($request->get('id'));
+        return success();
+    }
+
 }

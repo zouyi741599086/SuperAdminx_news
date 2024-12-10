@@ -148,7 +148,6 @@ class NewsLogic
         }
     }
 
-
     /**
      * 增加浏览量
      * @param int $id

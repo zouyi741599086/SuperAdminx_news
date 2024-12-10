@@ -17,17 +17,16 @@ class NewsClassLogic
 {
 
     /**
-     * 获取列表
+     * 获取所有分类
+     * @param bool $filter 是否前端在调用
      * */
-    public static function getList()
+    public static function getList(bool $filter = false)
     {
-        $list = Cache::get('NewsClass');
-        if (is_null($list)) {
-            $list = NewsClassModel::order('sort desc,id desc')
-                ->select()
-                ->toArray();
+        if ($filter) {
+            return NewsClassModel::where('status', 1)->order('sort desc,id desc')->select();
+        } else {
+            return NewsClassModel::order('sort desc,id desc')->select();
         }
-        return $list;
     }
 
     /**
@@ -38,6 +37,7 @@ class NewsClassLogic
     {
         return NewsClassModel::order('sort desc,id desc')
             ->where('pid', $id)
+            ->where('status', 1)
             ->select();
     }
 
@@ -47,11 +47,7 @@ class NewsClassLogic
      */
     public static function findData(int $id)
     {
-        $data = Cache::get('NewsClass');
-        if (is_null($data)) {
-            $data = NewsClassModel::find($id);
-        }
-        return $data;
+        return NewsClassModel::find($id);
     }
 
     /**

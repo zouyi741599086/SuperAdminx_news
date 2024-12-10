@@ -18,5 +18,39 @@ class NewsClass
     //不需要登录的方法
     protected $noNeedLogin = [];
 
-    
+    /**
+     * 获取所有分类
+     * @method get
+     * @param Request $request 
+     * @return Response
+     */
+    public function getList(Request $request) : Response
+    {
+        $list = NewsClassLogic::getList(true);
+        return success($list);
+    }
+
+    /**
+     * 获取分类详情
+     * @method get
+     * @param Request $request 
+     * @return Response
+     */
+    public function findData(Request $request) : Response
+    {
+        $data = NewsClassLogic::findData($request->get('id'));
+        return success($data);
+    }
+
+    /**
+     * 获取下级分类
+     * @method get
+     * @param Request $request 
+     * @return Response
+     */
+    public function getChildrenList(Request $request) : Response
+    {
+        $data = NewsClassLogic::getChildrenList($request->get('id'));
+        return success($data);
+    }
 }
