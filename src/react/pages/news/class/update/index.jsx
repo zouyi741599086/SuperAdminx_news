@@ -1,10 +1,8 @@
 import { useRef, useState, lazy } from 'react';
 import {
     ModalForm,
-    ProFormText,
-    ProForm,
 } from '@ant-design/pro-components';
-import { App, TreeSelect } from 'antd';
+import { App } from 'antd';
 import { newsClassApi } from '@/api/newsClass';
 import { useUpdateEffect } from 'ahooks';
 import Lazyload from '@/component/lazyLoad/index';
@@ -17,7 +15,7 @@ const Form1 = lazy(() => import('./../component/form1'));
  * @author zy <741599086@qq.com>
  * @link https://www.superadminx.com/
  */
-export default ({updateId, setUpdateId, tableReload, ...props}) => {
+export default ({ updateId, setUpdateId, tableReload, ...props }) => {
     const formRef = useRef();
     const [open, setOpen] = useState(false);
     const { message } = App.useApp();
@@ -80,8 +78,8 @@ export default ({updateId, setUpdateId, tableReload, ...props}) => {
                 }
             }}
         >
-            <Lazyload>
-                <Form1 typeAction="update" updateId={updateId}/>
+            <Lazyload block={false}>
+                <Form1 typeAction="update" updateId={updateId} />
             </Lazyload>
         </ModalForm>
     );

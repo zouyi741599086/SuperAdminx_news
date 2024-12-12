@@ -192,7 +192,6 @@ export default () => {
                     tableReload={tableReload}
                     updateId={updateId}
                     setUpdateId={setUpdateId}
-                    list={list}
                 />
             </Lazyload>
             <PageContainer
@@ -210,6 +209,9 @@ export default () => {
                     columns={columns}
                     scroll={{
                         x: 700
+                    }}
+                    options={{
+                        fullScreen: true
                     }}
                     headerTitle={
                         <Space>

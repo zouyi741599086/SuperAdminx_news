@@ -40,6 +40,9 @@ export default (props) => {
             isKeyPressSubmit={true}
             // 不干掉null跟undefined 的数据
             omitNil={false}
+            modalProps={{
+                destroyOnClose: true,
+            }}
             onFinish={async (values) => {
                 const result = await newsClassApi.create(values);
                 if (result.code === 1) {

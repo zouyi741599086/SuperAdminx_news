@@ -231,6 +231,9 @@ export default () => {
                     scroll={{
                         x: 1000
                     }}
+                    options={{
+                        fullScreen: true
+                    }}
                     // 左上角操作
                     headerTitle={
                         <Space>
