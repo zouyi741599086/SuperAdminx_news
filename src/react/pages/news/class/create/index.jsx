@@ -1,13 +1,14 @@
-import { useRef } from 'react';
+import { useRef, lazy } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import {
     ModalForm,
-    ProFormText,
-    ProForm
 } from '@ant-design/pro-components';
-import { Button, App, TreeSelect } from 'antd';
+import { Button, App } from 'antd';
 import { authCheck } from '@/common/function';
 import { newsClassApi } from '@/api/newsClass';
+import Lazyload from '@/component/lazyLoad/index';
+
+const Form1 = lazy(() => import('./../component/form1'));
 
 /**
  * 新增文章分类
@@ -51,37 +52,9 @@ export default (props) => {
                 }
             }}
         >
-            <ProFormText
-                name="title"
-                label="分类名称"
-                placeholder="请输入"
-                rules={[
-                    { required: true, message: '请输入' }
-                ]}
-            />
-            <ProForm.Item
-                name="pid"
-                label="上级分类"
-                placeholder="请选择"
-                rules={[
-
-                ]}
-                style={{ width: '100%' }}
-            >
-                <TreeSelect
-                    placeholder="请选择"
-                    showSearch={true}
-                    allowClear={true}
-                    treeDefaultExpandAll={true}
-                    treeNodeFilterProp="title"
-                    fieldNames={{
-                        label: 'title',
-                        key: 'id',
-                        value: 'id'
-                    }}
-                    treeData={props.list}
-                />
-            </ProForm.Item>
+            <Lazyload block={false}>
+                <Form1 typeAction="create" />
+            </Lazyload>
         </ModalForm>
     );
 };
