@@ -138,7 +138,7 @@ class NewsClassLogic
     }
 
     /**
-     * 上下架修改
+     * 状态修改
      * @param array $params
      */
     public static function updateStatus(array $params)

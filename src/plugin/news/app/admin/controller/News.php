@@ -21,6 +21,7 @@ class News
     /**
      * 获取列表
      * @method get
+     * @auth newsGetList
      * @param Request $request 
      * @return Response
      * */
@@ -45,6 +46,7 @@ class News
     /**
      * @log 添加文章
      * @method post
+     * @auth newsCreate
      * @param Request $request 
      * @return Response
      */
@@ -57,7 +59,7 @@ class News
     /**
      * @log 修改文章
      * @method post
-     * @auth news
+     * @auth newsUpdate
      * @param Request $request 
      * @return Response
      */
@@ -68,7 +70,7 @@ class News
     }
 
     /**
-     * @log 显示隐藏文章
+     * @log 修改文章状态
      * @method post
      * @auth newsUpdateStatus
      * @param Request $request 
@@ -104,7 +106,6 @@ class News
         NewsLogic::updateAll($request->post());
         return success([], '操作成功');
     }
-
 
     /**
      * 更改排序
