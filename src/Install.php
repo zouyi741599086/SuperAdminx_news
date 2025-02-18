@@ -13,9 +13,9 @@ class Install
      */
     protected static $pathRelation = [
         '/plugin/news'            => '/plugin/news',
-        '/react/api/news.js'      => '/public/admin_react/src/api/news.js',
-        '/react/api/newsClass.js' => '/public/admin_react/src/api/newsClass.js',
-        '/react/pages/news'       => '/public/admin_react/src/pages/news',
+        '/public/admin_react/src/api/news.js'      => '/public/admin_react/src/api/news.js',
+        '/public/admin_react/src/api/newsClass.js' => '/public/admin_react/src/api/newsClass.js',
+        '/public/admin_react/src/pages/news'       => '/public/admin_react/src/pages/news',
     ];
 
     // db的配置，用来标识是否已配置
