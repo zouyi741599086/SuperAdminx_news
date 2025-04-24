@@ -40,13 +40,9 @@ class NewsLogic
      * @param int $id 数据id
      * @param boolean $filter 前端是否过滤数据，如下架的
      */
-    public static function findData(int $id, bool $filter = false)
+    public static function findData(int $id)
     {
-        $data = NewsModel::find($id);
-        if ($filter && $data['status'] == 2) {
-            abort('数据不存在');
-        }
-        return $data;
+        return NewsModel::find($id);
     }
 
     /**

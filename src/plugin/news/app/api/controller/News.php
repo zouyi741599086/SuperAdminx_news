@@ -47,6 +47,9 @@ class News
     public function findData(Request $request) : Response
     {
         $data = NewsLogic::findData(request()->get('id'));
+        if (!$data || $data['status'] == 2) {
+            return error('数据不存在');
+        }
         //替换连接
         $data['img']     = file_url($data['img']);
         $data['content'] = file_url($data['content']);
