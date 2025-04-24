@@ -94,8 +94,14 @@ export default () => {
     // 表格列
     const columns = [
         {
+            title: 'ID',
+            dataIndex: 'id',
+            search: false,
+        },
+        {
             title: '标题',
             dataIndex: 'title',
+            ellipsis: true,
         },
         {
             title: '所属分类',
