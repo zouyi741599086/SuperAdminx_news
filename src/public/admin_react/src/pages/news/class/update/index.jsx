@@ -48,7 +48,7 @@ export default ({ updateId, setUpdateId, tableReload, ...props }) => {
             // 不干掉null跟undefined 的数据
             omitNil={true}
             modalProps={{
-                destroyOnClose: true,
+                destroyOnHidden: true,
             }}
             params={{
                 id: updateId

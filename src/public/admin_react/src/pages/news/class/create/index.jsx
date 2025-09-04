@@ -41,7 +41,7 @@ export default (props) => {
             // 不干掉null跟undefined 的数据
             omitNil={false}
             modalProps={{
-                destroyOnClose: true,
+                destroyOnHidden: true,
             }}
             onFinish={async (values) => {
                 const result = await newsClassApi.create(values);

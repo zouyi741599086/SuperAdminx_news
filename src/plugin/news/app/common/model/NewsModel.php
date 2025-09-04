@@ -36,24 +36,22 @@ class NewsModel extends BaseModel
     // 查询字段
     public function searchTitleAttr($query, $value, $data)
     {
-        $value && $query->where('title', 'like', "%{$value}%");
+        $query->where('title', 'like', "%{$value}%");
     }
     // 查询字段
     public function searchStatusAttr($query, $value, $data)
     {
-        $value && $query->where('status', 'like', $value);
+        $query->where('status', 'like', $value);
     }
     // 查询字段
     public function searchNewsClassIdAttr($query, $value, $data)
     {
-        if ($value) {
-            $news_class_id_arr = NewsClassModel::where('pid_path', 'like', "%,{$value},%")->column('id');
-            $query->where('news_class_id', 'in', $news_class_id_arr);
-        }
+        $news_class_id_arr = NewsClassModel::where('pid_path', 'like', "%,{$value},%")->column('id');
+        $query->where('news_class_id', 'in', $news_class_id_arr);
     }
     // 查询字段
     public function searchCreateTimeAttr($query, $value, $data)
     {
-        $value && $query->where('create_time', 'between', ["{$value[0]} 00:00:00", "{$value[1]} 23:59:59"]);
+        $query->where('create_time', 'between', ["{$value[0]} 00:00:00", "{$value[1]} 23:59:59"]);
     }
 }

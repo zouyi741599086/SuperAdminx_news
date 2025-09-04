@@ -30,7 +30,10 @@ class NewsLogic
         return NewsModel::withSearch(['title', 'status', 'news_class_id', 'create_time'], $params)
             ->with($with)
             ->withoutField('content')
-            ->where($filter ? 'status = 1' : [])
+            ->when($filter, function ($query)
+            {
+                $query->where('status', 1);
+            })
             ->order($orderBy)
             ->paginate($params['pageSize'] ?? 20);
     }
@@ -122,7 +125,10 @@ class NewsLogic
         }
         // 2》复制文章
         if ($type == 2) {
-            $list = NewsModel::whereIn('id', $ids)->withoutField('id,creaet_time,update_time,pv')->select()->toArray();
+            $list = NewsModel::whereIn('id', $ids)
+                ->withoutField('id,creaet_time,update_time,pv')
+                ->select()
+                ->toArray();
             foreach ($list as $k => &$v) {
                 $v['news_class_id'] = $news_class_id;
             }

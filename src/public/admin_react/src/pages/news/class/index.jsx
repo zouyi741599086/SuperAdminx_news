@@ -191,14 +191,6 @@ export default () => {
     ];
     return (
         <>
-            {/* 修改表单 */}
-            <Lazyload block={false}>
-                <Update
-                    tableReload={tableReload}
-                    updateId={updateId}
-                    setUpdateId={setUpdateId}
-                />
-            </Lazyload>
             <PageContainer
                 className="sa-page-container"
                 ghost
@@ -219,17 +211,27 @@ export default () => {
                         fullScreen: true
                     }}
                     headerTitle={
-                        <Space>
+						<>
+                            <Space>
+                                <Lazyload block={false}>
+                                    <Create tableReload={tableReload} list={list} />
+                                </Lazyload>
+                                <Button
+                                    type="primary"
+                                    onClick={updateSort}
+                                    disabled={authCheck('newsClassUpdateSort')}
+                                    icon={<OrderedListOutlined />}
+                                >保存排序</Button>
+                            </Space>
+							{/* 修改表单 */}
                             <Lazyload block={false}>
-                                <Create tableReload={tableReload} list={list} />
+                                <Update
+                                    tableReload={tableReload}
+                                    updateId={updateId}
+                                    setUpdateId={setUpdateId}
+                                />
                             </Lazyload>
-                            <Button
-                                type="primary"
-                                onClick={updateSort}
-                                disabled={authCheck('newsClassUpdateSort')}
-                                icon={<OrderedListOutlined />}
-                            >保存排序</Button>
-                        </Space>
+						</>
                     }
                     pagination={false}
                     request={async (params = {}, sort, filter) => {

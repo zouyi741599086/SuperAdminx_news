@@ -1,7 +1,6 @@
 <?php
 namespace plugin\news\app\common\logic;
 
-use support\Cache;
 use think\facade\Db;
 use plugin\news\app\common\model\NewsClassModel;
 use plugin\news\app\common\model\NewsModel;
@@ -22,11 +21,12 @@ class NewsClassLogic
      * */
     public static function getList(bool $filter = false)
     {
-        if ($filter) {
-            return NewsClassModel::where('status', 1)->order('sort desc,id desc')->select();
-        } else {
-            return NewsClassModel::order('sort desc,id desc')->select();
-        }
+        return NewsClassModel::order('sort desc,id desc')
+            ->when($filter, function ($query)
+            {
+                $query->where('status', 1);
+            })
+            ->select();
     }
 
     /**
@@ -64,7 +64,6 @@ class NewsClassLogic
             // 重新更新我下面所有数据的pid_path相关字段
             self::updatePidPath($result->id);
 
-            Cache::delete("NewsClass");
             Db::commit();
         } catch (\Exception $e) {
             Db::rollback();
@@ -90,8 +89,6 @@ class NewsClassLogic
             // 重新更新我下面所有数据的pid_path相关字段
             self::updatePidPath($params['id']);
 
-            Cache::delete("NewsClass");
-            Cache::delete("NewsClass{$params['id']}");
             Db::commit();
         } catch (\Exception $e) {
             Db::rollback();
@@ -152,8 +149,6 @@ class NewsClassLogic
                 'id'     => $params['id'],
                 'status' => $params['status']
             ]);
-            Cache::delete("NewsClass");
-            Cache::delete("NewsClass{$params['id']}");
             Db::commit();
         } catch (\Exception $e) {
             Db::rollback();
@@ -170,16 +165,15 @@ class NewsClassLogic
         Db::startTrans();
         try {
             // 删除关联的文章
-            $ids = NewsClassModel::where('pid_path', 'like', "%,{$id},%")->whereOr('id', $id)->column('id');
+            $ids = NewsClassModel::where('pid_path', 'like', "%,{$id},%")
+                ->whereOr('id', $id)
+                ->column('id');
             NewsModel::destroy(function ($query) use ($ids)
             {
                 $query->where('news_class_id', 'in', $ids);
             });
             // 删除分类
             NewsClassModel::destroy($ids);
-            // 删除缓存
-            Cache::delete("NewsClass");
-            Cache::delete("NewsClass{$id}");
             Db::commit();
         } catch (\Exception $e) {
             Db::rollback();
@@ -201,7 +195,6 @@ class NewsClassLogic
                     'sort' => $v['sort']
                 ]);
             }
-            Cache::delete("NewsClass");
             Db::commit();
         } catch (\Exception $e) {
             Db::rollback();
