@@ -58,7 +58,7 @@ class NewsClassLogic
     {
         Db::startTrans();
         try {
-            validate(NewsClassValidate::class)->check($params);
+            think_validate(NewsClassValidate::class)->check($params);
             $result = NewsClassModel::create($params);
 
             // 重新更新我下面所有数据的pid_path相关字段
@@ -79,7 +79,7 @@ class NewsClassLogic
     {
         Db::startTrans();
         try {
-            validate(NewsClassValidate::class)->check($params);
+            think_validate(NewsClassValidate::class)->check($params);
             // 由于前段form会把字段等于null的干掉，所以这要特别加上
             if (! isset($params['pid']) || ! $params['pid']) {
                 $params['pid'] = null;

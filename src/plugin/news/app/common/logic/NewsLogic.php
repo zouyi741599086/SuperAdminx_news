@@ -27,7 +27,7 @@ class NewsLogic
             $orderBy = "{$params['orderBy']},{$orderBy}";
         }
 
-        return NewsModel::withSearch(['title', 'status', 'news_class_id', 'create_time'], $params)
+        return NewsModel::withSearch(['title', 'status', 'news_class_id', 'create_time'], $params, true)
             ->with($with)
             ->withoutField('content')
             ->when($filter, function ($query)
@@ -55,7 +55,7 @@ class NewsLogic
     public static function create(array $data)
     {
         try {
-            validate(NewsValidate::class)->check($data);
+            think_validate(NewsValidate::class)->check($data);
             NewsModel::create($data);
         } catch (\Exception $e) {
             abort($e->getMessage());
@@ -69,7 +69,7 @@ class NewsLogic
     public static function update(array $data)
     {
         try {
-            validate(NewsValidate::class)->check($data);
+            think_validate(NewsValidate::class)->check($data);
             NewsModel::update($data);
         } catch (\Exception $e) {
             abort($e->getMessage());
