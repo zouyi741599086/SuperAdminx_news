@@ -1,5 +1,5 @@
 <?php
-namespace SuperAdminx\news;
+namespace suepradminx\news;
 
 use think\facade\Db;
 
