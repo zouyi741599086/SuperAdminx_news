@@ -38,17 +38,20 @@ class NewsModel extends BaseModel
     {
         $query->where('title', 'like', "%{$value}%");
     }
+    
     // 查询字段
     public function searchStatusAttr($query, $value, $data)
     {
         $query->where('status', 'like', $value);
     }
+
     // 查询字段
     public function searchNewsClassIdAttr($query, $value, $data)
     {
         $news_class_id_arr = NewsClassModel::where('pid_path', 'like', "%,{$value},%")->column('id');
         $query->where('news_class_id', 'in', $news_class_id_arr);
     }
+
     // 查询字段
     public function searchCreateTimeAttr($query, $value, $data)
     {

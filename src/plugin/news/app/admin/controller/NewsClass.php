@@ -101,11 +101,12 @@ class NewsClass
      * @method post
      * @auth newsClassUpdateSort
      * @param Request $request 
+     * @param array $list
      * @return Response
      * */
-    public function updateSort(Request $request) : Response
+    public function updateSort(Request $request, array $list) : Response
     {
-        NewsClassLogic::updateSort($request->post('list'));
+        NewsClassLogic::updateSort($list);
         return success([], '操作成功');
     }
 

@@ -114,11 +114,12 @@ class News
      * @method post
      * @auth newsUpdateSort
      * @param Request $request 
+     * @param array $list
      * @return Response
      * */
-    public function updateSort(Request $request): Response
+    public function updateSort(Request $request, array $list): Response
     {
-        NewsLogic::updateSort($request->post('list'));
+        NewsLogic::updateSort($list);
         return success([], '修改成功');
     }
 

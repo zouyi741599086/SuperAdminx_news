@@ -31,11 +31,7 @@ class News
         $list = NewsLogic::getList([], [], true);
         $list->each(function ($item, $key)
         {
-            if ($item['img']) {
-                $item['img'] = file_url($item['img']);
-            } else {
-                $item['img'] = [];
-            }
+            $item['img'] = $item['img'] ? file_url($item['img']) : [];
         });
         return success($list);
     }
@@ -44,12 +40,13 @@ class News
      * 获取文章
      * @method get
      * @param Request $request 
+     * @param int $id
      * @return Response
      */
-    public function findData(Request $request) : Response
+    public function findData(Request $request, int $id) : Response
     {
-        $data = NewsLogic::findData(request()->get('id'));
-        if (!$data || $data['status'] == 2) {
+        $data = NewsLogic::findData($id);
+        if (! $data || $data['status'] == 2) {
             return error('数据不存在');
         }
         //替换连接
@@ -62,11 +59,12 @@ class News
      * 增加浏览量
      * @method get
      * @param Request $request 
+     * @param int $id
      * @return Response
      */
-    public function incPv(Request $request) : Response
+    public function incPv(Request $request, int $id) : Response
     {
-        NewsLogic::incPv($request->get('id'));
+        NewsLogic::incPv($id);
         return success();
     }
 

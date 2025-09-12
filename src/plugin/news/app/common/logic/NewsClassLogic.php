@@ -189,12 +189,14 @@ class NewsClassLogic
     {
         Db::startTrans();
         try {
+            $updateData = [];
             foreach ($params as $k => $v) {
-                NewsClassModel::update([
+                $updateData[] = [
                     'id'   => $v['id'],
-                    'sort' => $v['sort']
-                ]);
+                    'sort' => intval($v['sort'])
+                ];
             }
+            (new NewsClassModel())->saveAll($updateData);
             Db::commit();
         } catch (\Exception $e) {
             Db::rollback();

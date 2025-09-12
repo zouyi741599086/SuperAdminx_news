@@ -41,7 +41,6 @@ class NewsLogic
     /**
      * 获取一条数据
      * @param int $id 数据id
-     * @param boolean $filter 前端是否过滤数据，如下架的
      */
     public static function findData(int $id)
     {
@@ -91,10 +90,10 @@ class NewsLogic
      */
     public static function updateStatus(array $data)
     {
+        if (! $data['id'] || ! $data['status']) {
+            abort('参数错误');
+        }
         try {
-            if (! $data['id'] || ! $data['status']) {
-                abort('参数错误');
-            }
             NewsModel::update([
                 'id'     => $data['id'],
                 'status' => $data['status']
@@ -142,12 +141,14 @@ class NewsLogic
      * */
     public static function updateSort(array $params)
     {
+        $updateData = [];
         foreach ($params as $k => $v) {
-            NewsModel::update([
+            $updateData[] = [
                 'id'   => $v['id'],
-                'sort' => $v['sort']
-            ]);
+                'sort' => intval($v['sort'])
+            ];
         }
+        (new NewsModel())->saveAll($updateData);
     }
 
     /**
