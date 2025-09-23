@@ -28,3 +28,13 @@ CREATE TABLE `sa_news_class` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='新闻分类';
 
+CREATE TABLE `sa_news_collect` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL COMMENT '用户id',
+  `news_id` int(11) NOT NULL COMMENT '文章id',
+  PRIMARY KEY (`id`),
+  KEY `fk_sa_user_collect_news_user_idx1` (`user_id`) USING BTREE,
+  KEY `fk_sa_user_collect_news_news_idx2` (`news_id`) USING BTREE,
+  CONSTRAINT `sa_user_collect_news_news_idfk2` FOREIGN KEY (`news_id`) REFERENCES `sa_news` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `sa_user_collect_news_user_idfk1` FOREIGN KEY (`user_id`) REFERENCES `sa_user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='用户收藏-文章';

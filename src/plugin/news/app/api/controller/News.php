@@ -4,6 +4,7 @@ namespace plugin\news\app\api\controller;
 use support\Request;
 use support\Response;
 use plugin\news\app\common\logic\NewsLogic;
+use plugin\news\app\common\logic\NewsCollectLogic;
 
 /**
  * 新闻
@@ -28,11 +29,11 @@ class News
      */
     public function getList(Request $request) : Response
     {
-        $list = NewsLogic::getList([], [], true);
-        $list->each(function ($item, $key)
-        {
-            $item['img'] = $item['img'] ? file_url($item['img']) : [];
-        });
+        $list = NewsLogic::getList($request->get(), [], true)
+            ->each(function ($item, $key)
+            {
+                $item->img = $item->img ? file_url($item->img) : [];
+            });
         return success($list);
     }
 
@@ -46,12 +47,15 @@ class News
     public function findData(Request $request, int $id) : Response
     {
         $data = NewsLogic::findData($id);
-        if (! $data || $data['status'] == 2) {
+        if (! $data || $data->status == 2) {
             return error('数据不存在');
         }
         //替换连接
-        $data['img']     = file_url($data['img']);
-        $data['content'] = file_url($data['content']);
+        $data->img     = file_url($data->img);
+        $data->content = file_url($data->content);
+
+        // 判断用户是否收藏了此文章
+        $data->is_collect = NewsCollectLogic::isCollect($data->id, $request->user->id ?? null);
         return success($data);
     }
 
